@@ -40,6 +40,7 @@ namespace SeleniumPlaygroundTests.WebDrivers
                 ["project"] = "Web",
                 ["build"] = "Selenium Playground Parallel Build",
                 ["name"] = $"{browser} on {platform}",
+                ["console"] = "info",
                 ["w3c"] = true,
                 ["plugin"] = "c#-nunit"
             };
@@ -58,24 +59,23 @@ namespace SeleniumPlaygroundTests.WebDrivers
 
         private static string GetSystemVariable(string key)
         {
-            //return Environment.GetEnvironmentVariable(key);
-            var value = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.User) ?? Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine); return value;
+            return Environment.GetEnvironmentVariable(key);
+            //var value = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.User) ?? Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine); return value;
         }
 
 
-        public static void MarkTestStatus(IWebDriver driver, bool passed, string reason = "")
+        public static void MarkTestStatus(IWebDriver driver, bool status, string reason = "")
         {
             try
             {
-                string status = passed ? "passed" : "failed";
 
-                ((IJavaScriptExecutor)driver).ExecuteScript("lambda-status=arguments[0];", status);
+                ((IJavaScriptExecutor)driver).ExecuteScript($"lambda-status={status};");
 
-                if (!string.IsNullOrEmpty(reason))
+               /* if (!string.IsNullOrEmpty(reason))
                 {
                     ((IJavaScriptExecutor)driver).ExecuteScript("lambda-comment=arguments[0];", reason);
                 }
-
+*/
                 // Optional: give LambdaTest time to register the status
                 Thread.Sleep(1000);
             }
