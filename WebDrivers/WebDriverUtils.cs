@@ -51,7 +51,7 @@ namespace SeleniumPlaygroundTests.WebDrivers
             }
 
             var hub = new Uri("https://hub.lambdatest.com/wd/hub");
-            var driver = new RemoteWebDriver(hub, options.ToCapabilities(), TimeSpan.FromMinutes(3));
+            var driver = new RemoteWebDriver(hub, options.ToCapabilities(), TimeSpan.FromMinutes(5));
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
             driver.Manage().Window.Maximize();
 
