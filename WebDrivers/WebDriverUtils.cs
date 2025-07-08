@@ -44,16 +44,17 @@ namespace SeleniumPlaygroundTests.WebDrivers
                 ["w3c"] = true,
                 ["plugin"] = "c#-nunit"
             };
+
             if (browser.Equals("safari", StringComparison.OrdinalIgnoreCase))
             {
                 ltOpt["automaticInspection"] = true;
             }
-            options.AddAdditionalOption("LT:Options", ltOpt);
 
             var hub = new Uri("https://hub.lambdatest.com/wd/hub");
-            var driver = new RemoteWebDriver(hub, options);
+            var driver = new RemoteWebDriver(hub, options.ToCapabilities(), TimeSpan.FromMinutes(3));
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
             driver.Manage().Window.Maximize();
+
             return driver;
         }
 
@@ -63,29 +64,27 @@ namespace SeleniumPlaygroundTests.WebDrivers
             //var value = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.User) ?? Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine); return value;
         }
 
-
         public static void MarkTestStatus(IWebDriver driver, bool status, string reason = "")
         {
             try
             {
-
                 ((IJavaScriptExecutor)driver).ExecuteScript($"lambda-status={status};");
 
-               /* if (!string.IsNullOrEmpty(reason))
+                // Optional: Add comment (uncomment if needed)
+                /*
+                if (!string.IsNullOrEmpty(reason))
                 {
                     ((IJavaScriptExecutor)driver).ExecuteScript("lambda-comment=arguments[0];", reason);
                 }
-*/
+                */
                 // Optional: give LambdaTest time to register the status
                 Thread.Sleep(1000);
             }
             catch (Exception ex)
             {
-
                 Console.WriteLine($"Failed to mark LambdaTest status: {ex.Message}");
             }
         }
-
 
         public static void UpdateLambdaTestStatus(IWebDriver driver, bool passed, string reason = "")
         {
@@ -102,14 +101,14 @@ namespace SeleniumPlaygroundTests.WebDrivers
 
                     var status = passed ? "passed" : "failed";
                     var content = new StringContent(
-                    $"{{\"status_ind\":\"{status}\",\"reason\":\"{reason}\"}}",
-                    Encoding.UTF8,
-                    "application/json"
+                        $"{{\"status_ind\":\"{status}\",\"reason\":\"{reason}\"}}",
+                        Encoding.UTF8,
+                        "application/json"
                     );
 
                     var response = client.PutAsync(
-                    $"https://api.lambdatest.com/automation/api/v1/sessions/{sessionId}",
-                    content
+                        $"https://api.lambdatest.com/automation/api/v1/sessions/{sessionId}",
+                        content
                     ).Result;
 
                     var result = response.Content.ReadAsStringAsync().Result;
@@ -121,10 +120,5 @@ namespace SeleniumPlaygroundTests.WebDrivers
                 Console.WriteLine($"Failed to update LambdaTest status: {ex.Message}");
             }
         }
-
-
-
-
-
     }
 }
